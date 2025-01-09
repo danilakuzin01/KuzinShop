@@ -1,0 +1,117 @@
+﻿@model KuzinShop.Models.DTO.CreateProductDTO
+
+
+<h1 class="text-center my-4">➕ Создание нового продукта</h1>
+
+<div class="container">
+    <form asp-action="CreateProduct" method="post">
+        @Html.AntiForgeryToken()
+
+        <!-- Название -->
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Название</label>
+            <input asp-for="Name" class="form-control" placeholder="Введите название продукта" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+
+        <!-- Название -->
+        <div class="mb-3">
+            <label asp-for="Image" class="form-label">Картинка</label>
+            <input asp-for="Image" class="form-control" placeholder="Введите ссылку на картинку" />
+            <span asp-validation-for="Image" class="text-danger"></span>
+        </div>
+
+        <!-- Категория -->
+        <div class="mb-3">
+            <label asp-for="CategoryId" class="form-label">Категория</label>
+            <select asp-for="CategoryId" class="form-select" id="CategoryId">
+                <option value="null">-- Выберите категорию --</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <!-- Динамические атрибуты -->
+        <div id="attributes-container"></div>
+
+
+
+        <!-- Описание продукта -->
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Описание продукта</label>
+            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Введите описание продукта"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        
+        <!-- Производитель -->
+        <div class="mb-3">
+            <label asp-for="Publisher" class="form-label">Производитель</label>
+            <input asp-for="Publisher" type="text" class="form-control" placeholder="Введите производителя" />
+            <span asp-validation-for="Publisher" class="text-danger"></span>
+        </div>
+
+
+        <!-- Количество игроков -->
+        <div class="mb-3">
+            <label asp-for="PlayersCount" class="form-label">Количество игроков </label>
+            <input asp-for="PlayersCount" type="number" step="0.01" class="form-control" placeholder="Введите количество игроков" />
+            <span asp-validation-for="PlayersCount" class="text-danger"></span>
+        </div>
+
+        <!-- Цена продукта -->
+        <div class="mb-3">
+            <label asp-for="Price" class="form-label">Цена</label>
+            <input asp-for="Price" type="number" step="0.01" class="form-control" placeholder="Введите цену продукта" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-secondary">← Назад</a>
+            <button type="submit" class="btn btn-primary">💾 Сохранить продукт</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('CategoryId').addEventListener('change', function () {
+            const categoryId = this.value;
+
+            fetch(`/Admin/GetCategoryAttributes?categoryId=${categoryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const attributes = data.$values;
+                    const container = document.getElementById('attributes-container');
+                    container.innerHTML = ''; // Очищаем старые атрибуты
+
+                    attributes.forEach((attr, index) => {
+                        console.log(attr)
+                        // Выбираем тип input в зависимости от DataType
+                        let inputType = 'text'; // По умолчанию текст
+                        if (attr.dataType === 'int') {
+                            inputType = 'number';
+                        } else if (attr.dataType === 'date') {
+                            inputType = 'date';
+                        }
+
+                        const field = document.createElement('div');
+                        field.innerHTML = `
+                                <div>
+                                    <label for="Attributes_${index}_Value">${attr.name} (${attr.measure || ""})</label>
+                                    <input type="${inputType}" id="Attributes_${index}_Value"
+                                                    name="Attributes[${index}].Value" class="form-control"  />
+                                    <input type="hidden" name="Attributes[${index}].AttributeId" value="${attr.id}" />
+                                </div>
+                            `;
+                        container.appendChild(field);
+                    });
+                })
+                .catch(error => console.error('Ошибка загрузки атрибутов:', error));
+        });
+    </script>
+}

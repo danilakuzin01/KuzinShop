@@ -1,0 +1,84 @@
+﻿@model List<ProductModel>
+<h1 class="text-center my-4">Панель администратора</h1>
+
+<div class="container">
+    <div class="row">
+        <!-- Карточка управления продуктами -->
+@*         <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">📦 Управление продуктами</div>
+                <div class="card-body">
+                    <p class="card-text">Создавайте, редактируйте и удаляйте продукты.</p>
+                    <a asp-controller="Admin" asp-action="Products" class="btn btn-light">Перейти</a>
+                </div>
+            </div>
+        </div> *@
+
+        <!-- Карточка управления пользователями -->
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">👥 Управление пользователями</div>
+                <div class="card-body">
+                    <p class="card-text">Просматривайте и редактируйте пользователей.</p>
+                    <a asp-controller="Admin" asp-action="Users" class="btn btn-light">Перейти</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Карточка аналитики -->
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">📊 Управление категориями</div>
+                <div class="card-body">
+                    <p class="card-text">Создавайте, редактируйте и удаляйте категории.</p>
+                    <a asp-controller="Admin" asp-action="Categories" class="btn btn-light">Перейти</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Кнопка добавления нового продукта -->
+    <div class="text-center mt-4">
+        <a asp-controller="Admin" asp-action="CreateProduct" class="btn btn-primary">➕ Добавить продукт</a>
+    </div>
+    <!-- Таблица последних продуктов -->
+    <h2 class="mt-5">📦 Последние добавленные продукты</h2>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Название</th>
+                <th>Категория</th>
+                <th>Цена</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                foreach (var product in Model)
+                {
+                    <tr>
+                        <td>@product.Id</td>
+                        <td>@product.Name</td>
+                        <td>@product.Category.Name</td>
+                        <td>@product.Price.ToString("C")</td>
+                        <td>
+                            <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning">✏️ Редактировать</a>
+                            <a asp-controller="Products" asp-action="Delete" asp-route-id="@product.Id" class="btn btn-sm btn-danger">🗑️ Удалить</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center">Нет доступных продуктов</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

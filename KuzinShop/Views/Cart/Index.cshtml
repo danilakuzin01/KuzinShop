@@ -1,0 +1,90 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model CartModel;
+@inject UserManager<User> UserManager
+
+
+<div style="width: 100%; min-height: 100vh">
+    <a href="/" class="btn btn-primary" style="width: 100px; font-size: 10pt; background: none; color: grey; border-color: gray">Назад</a>
+    <h2>Корзина</h2>
+    @if (Model.Products.Count > 0)
+    {
+        <div style="float: left">
+            @foreach (var item in Model.Products)
+            {
+                <div style="border: 2px solid grey; height: 100px; padding: 5px; border-radius:15px; width: 900px; margin-top: 5px">
+                    <div><img src="@item.Product.Image" style="width: 150px; max-height: 90px; border-radius:15px; float: left" alt="Alternate Text" /></div>
+                    <div style="margin-left: 5px; float: left">
+                        <div style="font-weight: bold">@item.Product.Name</div>
+                        <div>@item.Product.Price руб. x @item.Count = <span style="font-weight: bold">@item.Sum руб</span></div>
+                    </div>
+
+                    <div style="float: right"> 
+                        <form asp-action="Increase" asp-controller="Cart" method="post" style="float: left">
+                            <input type="hidden" name="productId" value="@item.Product.Id" />
+                            <button type="submit" class="btn btn-primary" style="margin-left: 15px;  padding: 0; width: 40px; height: 35px;  font-size: 12pt; font-weight: bold">+</button>
+                        </form>
+
+                        <form asp-action="Update" asp-controller="Cart" method="post" style="float: left">
+                            <input type="hidden" name="productId" value="@item.Product.Id" />
+                            <input type="number" class="form-control" min="1" name="Count" value="@item.Count" style="width: 60px; margin-left: 5px;" />
+                        </form>
+
+                        <form asp-action="Decrease" asp-controller="Cart" method="post" style="float: left">
+                            <input type="hidden" name="productId" value="@item.Product.Id" />
+                            <button type="submit" class="btn btn-danger" style="margin-left: 5px; padding: 0; width: 40px; height: 35px; font-size: 12pt; font-weight: bold">-</button>
+                        </form>
+
+                        <form asp-action="Delete" asp-controller="Cart" method="post" style="float: left">
+                            <input type="hidden" name="productId" value="@item.Product.Id" />
+                            <button type="submit" class="btn btn-danger" style="margin-left: 15px; padding: 0; width: 40px; height: 35px; font-size: 12pt; font-weight: bold">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+        <form asp-action="Order" asp-controller="Cart" style="float: right">
+            @if (User.Identity.IsAuthenticated)
+            {
+                var user = await UserManager.GetUserAsync(User);
+
+                <div>ФИО: <input required type="text" class="form-control" name="name" value="@($"{user?.FirstName} {user?.LastName}")" /></div>
+                <div>Адрес: <input required type="text" class="form-control" name="address" value="@($"{user?.Address}")" /></div>
+                <div>Телефон: <input required type="text" class="form-control" name="phone" value="@($"{user?.Phone}")" /></div>
+            }
+            else
+            {
+                <div>ФИО: <input required type="text" class="form-control" name="name" /></div>
+                <div>Адрес: <input required type="text" class="form-control" name="address" /></div>
+                <div>Телефон: <input required type="text" class="form-control" name="phone" /></div>
+            }
+            <div style="font-weight: bold">
+                ИТОГО: @Model.GetSum() руб.
+            </div>
+            <div>
+                <button class="btn btn-success" style="font-size: 16pt; font-weight: bold">Оформить заказ</button>
+            </div>
+        </form>
+    }
+    else
+    {
+        <div style="margin-left: 40%; margin-right: 35%; margin-top: 80px">
+            <h2>Здесь пока пусто :С</h2>
+        </div>
+    }
+</div>
+
+<style>
+    /* Hide the spin buttons in WebKit browsers */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Hide spin buttons in Firefox */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+</style>

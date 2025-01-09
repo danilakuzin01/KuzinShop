@@ -1,0 +1,21 @@
+﻿@model KuzinShop.Models.ViewModels.LoginViewModel
+
+<h2>Вход</h2>
+<form asp-controller="Account" asp-action="Login" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Login" class="form-label">Логин</label>
+        <input asp-for="Login" class="form-control" />
+        <span asp-validation-for="Login" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">Пароль</label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Войти</button>
+</form>
+Нет в системе? <a href="/Account/Register">Регистрация</a>

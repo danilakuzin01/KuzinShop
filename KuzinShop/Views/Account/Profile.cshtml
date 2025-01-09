@@ -1,0 +1,24 @@
+﻿@model KuzinShop.Models.ViewModels.ProfileViewModel
+
+
+<div class="container mt-4">
+    <h2 class="mb-4">Профиль пользователя</h2>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">Информация о пользователе</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Имя:</strong> @Model.FirstName</li>
+                <li class="list-group-item"><strong>Фамилия:</strong> @Model.LastName</li>
+                <li class="list-group-item"><strong>Адрес:</strong> @Model.Address</li>
+                <li class="list-group-item"><strong>Телефон:</strong> @Model.Phone</li>
+            </ul>
+            <div class="mt-3">
+                <form asp-controller="Account" asp-action="Logout">
+                    <button class="btn btn-danger" type="submit">Выйти</button>
+                    
+                    <a asp-action="EditProfile" class="btn btn-primary">Редактировать</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

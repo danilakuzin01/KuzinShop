@@ -1,0 +1,62 @@
+﻿@{
+    ViewData["Title"] = "Товар";
+}
+@using KuzinShop.Models.DTO
+@model ProductDetailDTO
+
+<div>
+    <a href="/" class="btn btn-primary" style="width: 100px; font-size: 10pt; background: none; color: grey; border-color: gray; margin-left: 15px">Назад</a>
+    <div style="margin-top: 10px">
+        <div style="display: grid; grid-template-columns: 60% 40%">
+            <div>
+                <img src="@Model.Image" height="300px" style="border-radius:30px" />
+            </div>
+            <div>
+                <div style="font-weight:bold; font-size: 26pt">@Model.Publisher @Model.Name</div>
+                <div>@Model.CategoryName</div>
+                <div>Цена: @Model.Price руб.</div>
+                <div>Дата выхода: @Model.Date.ToString("dd/MM/yyyy")</div>
+                @if ((bool)ViewBag.ItemInCart == false)
+                {
+                    <form asp-action="Add" asp-controller="Cart" method="post">
+                        <input type="hidden" name="productId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-primary" style="margin-top: 50px; padding: 0; width: 175px; height: 50px; font-size: 12pt; font-weight: bold">Добавить в корзину</button>
+                    </form>
+                }else{
+                    <div style="background-color:#efefef; border:grey 3px solid; border-radius: 15px; height: 150px; margin-top: 15px">
+                        <div style="margin-top: 35px; font-size: 14pt">
+                            <div style="margin-left: 5px; font-weight: bold; float: left;">
+                                В корзине: @ViewBag.ItemInCartCount
+                            </div>
+                            <form asp-action="Increase" asp-controller="Cart" method="post" style="float: left">
+                                <input type="hidden" name="productId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-primary" style="margin-left: 15px;  padding: 0; width: 40px; height: 35px;  font-size: 12pt; font-weight: bold">+</button>
+                            </form>
+
+                            <form asp-action="Decrease" asp-controller="Cart" method="post" style="float: left">
+                                <input type="hidden" name="productId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-danger" style="margin-left: 15px; padding: 0; width: 40px; height: 35px; font-size: 12pt; font-weight: bold">-</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div style="width: 100%">
+            <h2>Описание</h2>
+            <div style="background: #EFEFEF; border-radius: 15px; min-height: 150px; padding: 5px">@Model.Description</div>
+            <h2 style="margin-top:10px">Характеристики</h2>
+            @foreach (var item in Model.ProductAttributes)
+            {
+                <div>
+                    @item.Attribute.Name:
+                    @item.Value
+                    @if(item.Attribute.Measure != null)
+                    {
+                        @item.Attribute.Measure
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

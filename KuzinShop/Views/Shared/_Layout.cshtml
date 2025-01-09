@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - KuzinShop</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/KuzinShop.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">KuzinShop</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item" style="width: 250px">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Панель администратора</a>
+                            </li>
+                        }
+                        <li class="d-flex justify-content-center w-100">
+                            <form method="get" action="@Url.Action("Index", "Home")" class="input-group" style="max-width: 50%">
+                                <input class="form-control" type="search" name="Name" placeholder="Поиск товара" aria-label="Search" value="@Context.Request.Query["Name"]">
+                                <button class="btn btn-primary" type="submit">Поиск</button>
+                            </form>
+                        </li>
+                    </ul>
+                    <div class="d-flex" style="font-size: 22px; margin-right: 50px">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="Index">
+                            @if (TempData["CartCount"] != null && (int)TempData["CartCount"] > 0)
+                            {
+                                <div style="width: 18px; height: 18px; background: grey; border-radius: 50%; margin-top: -12px; margin-left: 14px; position: absolute; z-index: 2">
+                                    <span style="color: white; font-size: 12pt; font-weight: 700; padding-left: 25%; margin-top: -2px; position: absolute">@TempData["CartCount"]</span>
+                                </div>
+                            }
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </a>
+                        <div class="nav-item dropdown" style="color: black">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black">
+                                <i class="fa-regular fa-circle-user" style="font-size: 26px"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <li class="dropdown-item"> @User.Identity.Name</li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">Профиль</a></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout">
+                                            <button class="dropdown-item" type="submit">Выйти</button>
+                                        </form>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Login">Войти</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Register">Регистрация</a></li>
+                                }
+                                @* <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Что-то еще здесь</ a></li>*@
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - KuzinShop - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+<style>
+    .dropdown-menu li a{
+    }
+
+    .dropdown ul {
+        min-width: 100px;
+        max-width: 150px;
+    }
+</style>
+</html>
