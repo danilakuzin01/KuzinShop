@@ -11,20 +11,22 @@ using KuzinShop.Models.DTO;
 namespace KuzinShop.Controllers
 {
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly CartService _cartService;
-        private readonly IRepository<ProductModel> _productRepository;
+        private readonly IProductRepository<ProductModel> _productRepository;
         private readonly CategoryAttributesRepository _categoryAttributeRepository;
         private readonly IRepository<CategoryModel> _categoryRepository;
+        private readonly IAttributeRepository<AttributeModel> _attributeRepository;
 
-        public AdminController(CartService cartService, IRepository<ProductModel> productRepository, CategoryAttributesRepository categoryAttributes, IRepository<CategoryModel> categoryRepository)
+        public AdminController(CartService cartService, IProductRepository<ProductModel> productRepository, CategoryAttributesRepository categoryAttributes, IRepository<CategoryModel> categoryRepository, IAttributeRepository<AttributeModel> attributeRepository)
         {
             _cartService = cartService;
             _productRepository = productRepository;
             _categoryAttributeRepository = categoryAttributes;
             _categoryRepository = categoryRepository;
+            _attributeRepository = attributeRepository;
         }
 
         public IActionResult Index()
@@ -46,6 +48,7 @@ namespace KuzinShop.Controllers
             return View(products);
         }
 
+        // Страница для создания продукта
         public IActionResult CreateProduct()
         {
             CreateProductDTO product = new CreateProductDTO {
@@ -54,65 +57,81 @@ namespace KuzinShop.Controllers
             return View(product);
         }
 
+        // Обработка данных для создания продукта
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult CreateProduct(CreateProductDTO model)
         {
             if (ModelState.IsValid)
             {
-                // Получаем категорию продукта
-                var category = _categoryRepository.Get(model.CategoryId);
-                if (category == null)
-                {
-                    ModelState.AddModelError("", "Указанная категория не найдена.");
-                    return View(model);
-                }
-
-                // Создаем объект продукта
                 var product = new ProductModel
                 {
                     Name = model.Name,
                     Description = model.Description,
-                    Price = model.Price,
                     Publisher = model.Publisher,
                     PlayersCount = model.PlayersCount,
-                    Date = DateTime.Now,
                     Image = model.Image,
-                    Category = category
+                    Price = model.Price,
+                    Category = _categoryRepository.Get(model.CategoryId),
+                    Date = DateTime.Now
                 };
 
-                // Добавляем атрибуты продукта
-                //foreach (var attr in model.Attributes)
-                //{
-                //    var attribute = _categoryAttributeRepository.Get(attr.AttributeId);
-                //    if (attribute != null)
-                //    {
-                //        product.ProductAttributes.Add(new ProductAttributeModel
-                //        {
-                //            Attribute = attribute.Attribute,
-                //            Value = attr.Value
-                //        });
-                //    }
-                //}
+                // Обработка атрибутов
+                product.ProductAttributes = model.Attributes.Select(attr => new ProductAttributeModel
+                {
+                    Attribute = _attributeRepository.Get(attr.AttributeId),
+                    StringValue = attr.DataType == "string" ? attr.StringValue : null,
+                    IntegerValue = attr.DataType == "int" ? attr.IntegerValue : null,
+                    DateValue = attr.DataType == "date" ? attr.DateValue : null
+                }).ToList();
 
-                // Сохраняем продукт в базе данных
-                //_categoryAttributeRepository.Add(product);
-
-                // Перенаправляем на список продуктов
-                //return RedirectToAction("Products");
+                _productRepository.Create(product);
+                return RedirectToAction("Index");
             }
 
-            // Если данные некорректны, возвращаемся на страницу создания
-            ViewBag.Categories = new SelectList(_categoryRepository.GetAll(), "Id", "Name");
+            ViewBag.Categories = new SelectList(_categoryRepository.GetAll(), "Id", "Name", model.CategoryId);
             return View(model);
         }
 
-
-        public IActionResult UpdateProduct(int id)
+        public IActionResult EditProduct(int id)
         {
             ProductModel productModel = _productRepository.Get(id);
-            return View(productModel);
+
+
+            CreateProductDTO product = new CreateProductDTO {
+                Id = productModel.Id,
+                Name = productModel.Name,
+                Description = productModel.Description,
+                Publisher = productModel.Publisher,
+                Price = productModel.Price,
+                PlayersCount = productModel.PlayersCount,
+                Image = productModel.Image,
+                CategoryId = productModel.Category?.Id ?? 0, // Обеспечиваем, чтобы CategoryId был корректным
+                Categories = _categoryRepository.GetAll() // Заполняем список категорий
+            };
+            
+
+            return View(product);
         }
 
+        public IActionResult DeleteProduct(int id)
+        {
+            // Найти продукт по Id
+            var product = _productRepository.Get(id);
+
+            if (product == null)
+            {
+                // Если продукт не найден, возвращаем ошибку или страницу с уведомлением
+                return NotFound();
+            }
+
+            // Удалить продукт
+            _productRepository.Delete(product);
+
+            return RedirectToAction("Index");
+        }
+
+        // Запрос на получение аттрибутов согласно выбранной категории
         [HttpGet]
         public IActionResult GetCategoryAttributes(int categoryId)
         {

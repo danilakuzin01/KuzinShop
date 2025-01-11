@@ -13,13 +13,13 @@ namespace KuzinShop.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IRepository<ProductModel> _productRepository;
+        private readonly IProductRepository<ProductModel> _productRepository;
         private readonly IRepository<CategoryModel> _categoryRepository;
-        private readonly AttributeRepository _attrributeRepository;
+        private readonly IAttributeRepository<AttributeModel> _attrributeRepository;
         private readonly CartService _cartService;
         private readonly ProductMapper _productMapper;
 
-        public HomeController(ILogger<HomeController> logger, IRepository<ProductModel> productRepository, IRepository<CategoryModel> categoryRepository, CartService cartService, ProductMapper productMapper, AttributeRepository attrributeRepository)
+        public HomeController(ILogger<HomeController> logger, IProductRepository<ProductModel> productRepository, IRepository<CategoryModel> categoryRepository, CartService cartService, ProductMapper productMapper, IAttributeRepository<AttributeModel> attrributeRepository)
         {
             _logger = logger;
             _productRepository = productRepository;

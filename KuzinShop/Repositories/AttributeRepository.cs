@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace KuzinShop.Repositories
 {
-    public class AttributeRepository : IAttributeRepository
+    public class AttributeRepository: IAttributeRepository<AttributeModel>
     {
         private readonly ILogger<AttributeRepository> _logger;
         private readonly ApplicationContext _context;
@@ -31,6 +31,12 @@ namespace KuzinShop.Repositories
                 .ToList();
 
             return attributes;
+        }
+
+        public AttributeModel Get(int id)
+        {
+            return _context.Attributes
+                           .FirstOrDefault(a => a.Id == id); // Возвращаем первый найденный атрибут с указанным Id
         }
     }
 }

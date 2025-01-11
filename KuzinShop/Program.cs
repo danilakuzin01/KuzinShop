@@ -57,9 +57,9 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 
 // Регистрация ProductRepository в контейнере DI
-builder.Services.AddScoped<IRepository<ProductModel>, ProductRepository>();
+builder.Services.AddScoped<IProductRepository<ProductModel>, ProductRepository>();
 builder.Services.AddScoped<IRepository<CategoryModel>, CategoryRepository>();
-builder.Services.AddScoped<AttributeRepository>();
+builder.Services.AddScoped<IAttributeRepository<AttributeModel>, AttributeRepository>();
 builder.Services.AddScoped<CategoryAttributesRepository>();
 builder.Services.AddScoped<ProductMapper>();
 builder.Services.AddScoped<CartService>();

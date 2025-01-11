@@ -66,8 +66,14 @@
                         <td>@product.Category.Name</td>
                         <td>@product.Price.ToString("C")</td>
                         <td>
-                            <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning">✏️ Редактировать</a>
-                            <a asp-controller="Products" asp-action="Delete" asp-route-id="@product.Id" class="btn btn-sm btn-danger">🗑️ Удалить</a>
+
+                            <form method="post" action="@Url.Action("EditProduct", "Admin", new { id = product.Id })" style="display: inline-block; margin-left: 10px;">
+                                <button type="submit" class="btn btn-sm btn-warning">✏️ Редактировать</button>
+                            </form>
+
+                            <form method="post" action="@Url.Action("DeleteProduct", "Admin", new { id = product.Id })" style="display: inline-block; margin-left: 10px;">
+                                <button type="submit" class="btn btn-sm btn-danger">🗑️ Удалить</button>
+                            </form>
                         </td>
                     </tr>
                 }

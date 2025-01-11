@@ -5,13 +5,34 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace KuzinShop.Repositories
 {
-    public class ProductRepository: IRepository<ProductModel>
+    public class ProductRepository: IProductRepository<ProductModel>
     {
         private readonly ApplicationContext _context;
 
         public ProductRepository(ApplicationContext context)
         {
             _context = context;
+        }
+
+        public void Create(ProductModel product)
+        {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
+            // Добавление продукта в контекст
+            _context.Products.Add(product);
+
+            // Добавление связанных атрибутов
+            foreach (var productAttribute in product.ProductAttributes)
+            {
+                // Добавление аттрибутов к продукту
+                _context.ProductAttributes.Add(productAttribute);
+            }
+
+            // Сохранение изменений в базе данных
+            _context.SaveChanges();
         }
 
         public List<ProductModel> GetAll()
@@ -105,6 +126,11 @@ namespace KuzinShop.Repositories
             return _context.Products.Include(p => p.Category).Include(p => p.ProductAttributes).ThenInclude(p => p.Attribute).FirstOrDefault(p => p.Id == id);
         }
 
+        public void Delete(ProductModel product)
+        {
+            _context.Products.Remove(product);
+            _context.SaveChanges();
+        }
 
     }
 }
