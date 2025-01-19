@@ -7,16 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Admin\Catrgories.cshtml" />
-    <Content Remove="Views\Admin\Users.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Views\Admin\Catrgories.cshtml" />
-    <Compile Include="Views\Admin\Users.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FontAwesome" Version="4.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.36" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.36" />

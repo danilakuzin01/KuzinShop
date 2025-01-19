@@ -39,6 +39,7 @@ namespace KuzinShop.Controllers
                     UserName = model.Login,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
+                    IsActive = true
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -89,12 +90,17 @@ namespace KuzinShop.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
+
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
             var user = await _userManager.FindByNameAsync(model.Login);
+            if (user.IsActive == false)
+            {
+                return View(model);
+            }
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var result = await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent: false, lockoutOnFailure: false);
@@ -122,7 +128,7 @@ namespace KuzinShop.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Phone = user.Email,
-                Address = user.Address,
+                Address = user.Address
             };
 
             return View(model);
@@ -142,7 +148,7 @@ namespace KuzinShop.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Phone = user.Phone,
-                Address = user.Address,
+                Address = user.Address
             };
 
             return View(model);
@@ -167,6 +173,7 @@ namespace KuzinShop.Controllers
             user.LastName = model.LastName;
             user.Address = model.Address;
             user.Phone = model.Phone; 
+
 
             var result = await _userManager.UpdateAsync(user);
 

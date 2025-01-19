@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using KuzinShop.Models.DTO;
+using Microsoft.AspNetCore.Identity;
+using KuzinShop.Models.ViewModels;
 
 namespace KuzinShop.Controllers
 {
@@ -14,17 +16,21 @@ namespace KuzinShop.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
+        private readonly UserManager<User> _userManager;
         private readonly CartService _cartService;
         private readonly IProductRepository<ProductModel> _productRepository;
         private readonly CategoryAttributesRepository _categoryAttributeRepository;
+        private readonly UserRepository _userRepository;
         private readonly IRepository<CategoryModel> _categoryRepository;
         private readonly IAttributeRepository<AttributeModel> _attributeRepository;
 
-        public AdminController(CartService cartService, IProductRepository<ProductModel> productRepository, CategoryAttributesRepository categoryAttributes, IRepository<CategoryModel> categoryRepository, IAttributeRepository<AttributeModel> attributeRepository)
+        public AdminController(UserManager<User> userManager, CartService cartService, IProductRepository<ProductModel> productRepository, CategoryAttributesRepository categoryAttributes, UserRepository userRepository, IRepository<CategoryModel> categoryRepository, IAttributeRepository<AttributeModel> attributeRepository)
         {
+            _userManager = userManager;
             _cartService = cartService;
             _productRepository = productRepository;
             _categoryAttributeRepository = categoryAttributes;
+            _userRepository = userRepository;
             _categoryRepository = categoryRepository;
             _attributeRepository = attributeRepository;
         }
@@ -224,10 +230,34 @@ namespace KuzinShop.Controllers
         }
 
 
-        public IActionResult Users()
+        [HttpGet]
+        public async Task<IActionResult> Users()
         {
-            //List<User> users = use
-            return View();
+            var users = _userManager.Users.ToList();
+
+            var usersWithRoles = new List<AdminUsersViewModel>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                usersWithRoles.Add(new AdminUsersViewModel
+                {
+                    Id = user.Id,
+                    LastName = user.LastName,
+                    FirstName = user.FirstName,
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    Roles = roles
+                });
+            }
+
+            return View(usersWithRoles);
+        }
+        
+        public IActionResult Categories()
+        {
+            List<CategoryModel> categories = _categoryRepository.GetAll();
+            return View(categories);
         }
     }
 }

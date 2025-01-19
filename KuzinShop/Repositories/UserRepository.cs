@@ -15,6 +15,21 @@ namespace KuzinShop.Repositories
         {
             return _context.Users.ToList();
         }
+        public User Get(string id)
+        {
+            return _context.Users.FirstOrDefault(x => x.Id.Equals(id));
+        }
+
+        public void Update(User user)
+        {
+            _context.Users.Update(user);
+            _context.SaveChanges();
+        }
+
+        public void BanUser(User user)
+        {
+            user.IsActive = false;
+        }
 
         //public User GetByLogin(string login)
         //{

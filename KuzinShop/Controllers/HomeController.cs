@@ -29,6 +29,8 @@ namespace KuzinShop.Controllers
             _attrributeRepository = attrributeRepository;
         }
 
+
+        [HttpGet]
         public IActionResult Index(FilterModel filter)
         {
             var cart = _cartService.CreateCart();
@@ -54,6 +56,7 @@ namespace KuzinShop.Controllers
         }
 
 
+        [HttpGet]
         public IActionResult Detail(int id)
         {
             var cart = _cartService.CreateCart();
@@ -79,6 +82,7 @@ namespace KuzinShop.Controllers
 
 
 
+        [HttpGet]
         public IActionResult Privacy()
         {
             return View();

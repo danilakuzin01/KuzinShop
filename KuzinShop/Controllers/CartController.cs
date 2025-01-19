@@ -17,6 +17,7 @@ namespace KuzinShop.Controllers
             _productRepository = productRepository;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
             var cart = _cartService.CreateCart();
@@ -40,7 +41,6 @@ namespace KuzinShop.Controllers
             return View(order);
 
         }
-
 
         [HttpPost]
         public IActionResult Add(int productId)

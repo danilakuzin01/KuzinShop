@@ -63,6 +63,7 @@ builder.Services.AddScoped<IAttributeRepository<AttributeModel>, AttributeReposi
 builder.Services.AddScoped<CategoryAttributesRepository>();
 builder.Services.AddScoped<ProductMapper>();
 builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<UserRepository>();
 
 
 var app = builder.Build();

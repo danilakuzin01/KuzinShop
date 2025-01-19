@@ -1,4 +1,4 @@
-﻿@model List< KuzinShop.Models.ViewModels.AdminUsersViewModel>
+﻿@model List<CategoryModel>
 
 <!-- Кнопка добавления нового продукта -->
 <div class="text-center mt-4">
@@ -9,29 +9,25 @@
     <thead>
         <tr>
             <th>#</th>
-            <th>Имя</th>
-            <th>Логин</th>
-            <th>Роли</th>
+            <th>Название</th>
         </tr>
     </thead>
     <tbody>
         @if (Model != null)
         {
-            foreach (var user in Model)
+            foreach (var category in Model)
             {
                 <tr>
-                    <td>@user.Id</td>
-                    <td>@user.FirstName @user.LastName</td>
-                    <td>@user.UserName</td>
-                    <td>@foreach(var role in user.Roles) @role.ToString()</td>
+                    <td>@category.Id</td>
+                    <td>@category.Name</td>
                     <td>
 
-                        <form method="get" action="@Url.Action("EditUser", "Admin", new { id = user.Id })" style="display: inline-block; margin-left: 10px;">
+                        <form method="get" action="@Url.Action("EditCategory", "Admin", new { id = category.Id })" style="display: inline-block; margin-left: 10px;">
                             <button type="submit" class="btn btn-sm btn-warning">✏️ Редактировать</button>
                         </form>
 
-                        <form method="post" action="@Url.Action("BanUser", "Admin", new { id = user.Id })" style="display: inline-block; margin-left: 10px;">
-                            <button type="submit" class="btn btn-sm btn-danger">🗑️ Заблокировать</button>
+                        <form method="post" action="@Url.Action("DeleteProduct", "Admin", new { id = category.Id })" style="display: inline-block; margin-left: 10px;">
+                            <button type="submit" class="btn btn-sm btn-danger">🗑️ Удалить</button>
                         </form>
                     </td>
                 </tr>
