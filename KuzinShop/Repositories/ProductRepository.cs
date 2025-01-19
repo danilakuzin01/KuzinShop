@@ -132,5 +132,10 @@ namespace KuzinShop.Repositories
             _context.SaveChanges();
         }
 
+        public void Update(ProductModel product)
+        {
+            _context.Products.Update(product);
+            _context.SaveChanges();
+        }
     }
 }

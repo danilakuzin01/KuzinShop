@@ -52,5 +52,13 @@ namespace KuzinShop.Repositories
                 .Select(ca => ca.Attribute)
                 .ToList();
         }
+
+        public List<CategoryAttributeModel> GetAttributesByCategory(int categoryId)
+        {
+            return _context.CategoryAttributes
+                .Include(ca => ca.Attribute) // Загрузка связанных данных
+                .Where(ca => ca.Category.Id == categoryId)
+                .ToList();
+        }
     }
 }

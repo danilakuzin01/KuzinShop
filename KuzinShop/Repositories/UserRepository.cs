@@ -11,6 +11,10 @@ namespace KuzinShop.Repositories
         {
             _context = context;
         }
+        public List<User> GetAll()
+        {
+            return _context.Users.ToList();
+        }
 
         //public User GetByLogin(string login)
         //{

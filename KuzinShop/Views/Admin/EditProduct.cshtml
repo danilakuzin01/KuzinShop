@@ -1,10 +1,10 @@
 ﻿@model KuzinShop.Models.DTO.CreateProductDTO
 
 
-<h1 class="text-center my-4">➕ Создание нового продукта</h1>
+<h1 class="text-center my-4">➕ Редактирование продукта</h1>
 
 <div class="container">
-    <form asp-action="CreateProduct" method="post">
+    <form asp-action="EditProduct" method="post">
         @Html.AntiForgeryToken()
 
         <!-- Название -->
@@ -35,9 +35,30 @@
             <span asp-validation-for="CategoryId" class="text-danger"></span>
         </div>
 
-        <!-- Динамические атрибуты -->
-        <div id="attributes-container"></div>
+        <div id="attributes-container">
+            <!-- Динамические атрибуты -->
+            @foreach (var attr in Model.Attributes)
+            {
+                <div class="form-group">
+                    <label>@attr.Name</label>
 
+                    @if (attr.DataType == "string")
+                    {
+                        <input type="text" name="Attributes[@attr.AttributeId].StringValue" class="form-control" value="@attr.StringValue" />
+                    }
+                    else if (attr.DataType == "int")
+                    {
+                        <input type="number" name="Attributes[@attr.AttributeId].IntegerValue" class="form-control" value="@attr.IntegerValue" />
+                    }
+                    else if (attr.DataType == "date")
+                    {
+                        <input type="date" name="Attributes[@attr.AttributeId].DateValue" class="form-control" value="@attr.DateValue?.ToString("yyyy-MM-dd")" />
+                    }
+
+                    <span asp-validation-for="Attributes[@attr.AttributeId]" class="text-danger"></span>
+                </div>
+             }
+        </div>
 
 
         <!-- Описание продукта -->

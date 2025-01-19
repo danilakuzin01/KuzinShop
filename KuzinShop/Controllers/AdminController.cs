@@ -93,26 +93,95 @@ namespace KuzinShop.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public IActionResult EditProduct(int id)
         {
-            ProductModel productModel = _productRepository.Get(id);
+            // Получаем продукт из репозитория
+            var product = _productRepository.Get(id);
 
+            if (product == null)
+            {
+                return NotFound();
+            }
 
-            CreateProductDTO product = new CreateProductDTO {
-                Id = productModel.Id,
-                Name = productModel.Name,
-                Description = productModel.Description,
-                Publisher = productModel.Publisher,
-                Price = productModel.Price,
-                PlayersCount = productModel.PlayersCount,
-                Image = productModel.Image,
-                CategoryId = productModel.Category?.Id ?? 0, // Обеспечиваем, чтобы CategoryId был корректным
-                Categories = _categoryRepository.GetAll() // Заполняем список категорий
+            // Формируем DTO
+            var model = new CreateProductDTO
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Publisher = product.Publisher,
+                PlayersCount = product.PlayersCount,
+                Image = product.Image,
+                Price = product.Price,
+                CategoryId = product.Category.Id,
+                Categories = _categoryRepository.GetAll(),
+                Attributes = _categoryAttributeRepository
+                    .GetAttributesByCategoryId(product.Category.Id)
+                    .Select(attr => new AttributeDTO
+                    {
+                        AttributeId = attr.Id,
+                        Name = attr.Name,
+                        DataType = attr.DataType,
+                        StringValue = product.ProductAttributes
+                            .FirstOrDefault(pa => pa.Attribute.Id == attr.Id)?.StringValue,
+                        IntegerValue = product.ProductAttributes
+                            .FirstOrDefault(pa => pa.Attribute.Id == attr.Id)?.IntegerValue,
+                        DateValue = product.ProductAttributes
+                            .FirstOrDefault(pa => pa.Attribute.Id == attr.Id)?.DateValue,
+                    })
+                    .ToList()
             };
-            
 
-            return View(product);
+            return View(model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditProduct(CreateProductDTO model)
+        {
+            // Получить существующий продукт
+            var product = _productRepository.Get(model.Id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            // Обновить основные свойства продукта
+            product.Name = model.Name;
+            product.Description = model.Description;
+            product.Publisher = model.Publisher;
+            product.PlayersCount = model.PlayersCount;
+            product.Image = model.Image;
+            product.Price = model.Price;
+
+            // Обновить категорию
+            var category = _categoryRepository.Get(model.CategoryId);
+            if (category == null)
+            {
+                ModelState.AddModelError("CategoryId", "Категория не найдена.");
+                model.Categories = _categoryRepository.GetAll();
+                return View(model);
+            }
+            product.Category = category;
+
+            // Обновить атрибуты
+            // Обрабатываем динамические атрибуты
+            product.ProductAttributes = model.Attributes.Select(attr => new ProductAttributeModel
+            {
+                Attribute = _attributeRepository.Get(attr.AttributeId),
+                StringValue = attr.DataType == "string" ? attr.StringValue : null,
+                IntegerValue = attr.DataType == "int" ? attr.IntegerValue : null,
+                DateValue = attr.DataType == "date" ? attr.DateValue : null
+            }).ToList();
+
+            // Сохранить изменения
+            _productRepository.Update(product);
+
+            // Перенаправить на список продуктов или другую страницу
+            return RedirectToAction("Index");
+        }
+
 
         public IActionResult DeleteProduct(int id)
         {
@@ -157,7 +226,7 @@ namespace KuzinShop.Controllers
 
         public IActionResult Users()
         {
-
+            //List<User> users = use
             return View();
         }
     }

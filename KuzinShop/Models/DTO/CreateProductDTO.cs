@@ -19,6 +19,7 @@
     public class AttributeDTO
     {
         public int AttributeId { get; set; }
+        public string Name { get; set; } // Название атрибута
         public string? StringValue { get; set; }
         public int? IntegerValue { get; set; }
         public DateTime? DateValue { get; set; }

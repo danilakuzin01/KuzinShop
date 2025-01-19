@@ -67,7 +67,7 @@
                         <td>@product.Price.ToString("C")</td>
                         <td>
 
-                            <form method="post" action="@Url.Action("EditProduct", "Admin", new { id = product.Id })" style="display: inline-block; margin-left: 10px;">
+                            <form method="get" action="@Url.Action("EditProduct", "Admin", new { id = product.Id })" style="display: inline-block; margin-left: 10px;">
                                 <button type="submit" class="btn btn-sm btn-warning">✏️ Редактировать</button>
                             </form>
 
