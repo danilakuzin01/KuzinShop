@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using KuzinShop.Models;
-using KuzinShop.Repositories;
-using KuzinShop.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using KuzinShop.Models;
 using KuzinShop.Models.DTO;
-using Microsoft.AspNetCore.Identity;
 using KuzinShop.Models.ViewModels;
+using KuzinShop.Repositories;
+using KuzinShop.Repositories.Impl;
+using KuzinShop.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace KuzinShop.Controllers
 {
@@ -18,13 +17,13 @@ namespace KuzinShop.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly CartService _cartService;
-        private readonly IProductRepository<ProductModel> _productRepository;
+        private readonly IProductRepository _productRepository;
         private readonly CategoryAttributesRepository _categoryAttributeRepository;
         private readonly UserRepository _userRepository;
-        private readonly IRepository<CategoryModel> _categoryRepository;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IAttributeRepository<AttributeModel> _attributeRepository;
 
-        public AdminController(UserManager<User> userManager, CartService cartService, IProductRepository<ProductModel> productRepository, CategoryAttributesRepository categoryAttributes, UserRepository userRepository, IRepository<CategoryModel> categoryRepository, IAttributeRepository<AttributeModel> attributeRepository)
+        public AdminController(UserManager<User> userManager, CartService cartService, IProductRepository productRepository, CategoryAttributesRepository categoryAttributes, UserRepository userRepository, ICategoryRepository categoryRepository, IAttributeRepository<AttributeModel> attributeRepository)
         {
             _userManager = userManager;
             _cartService = cartService;
@@ -57,7 +56,8 @@ namespace KuzinShop.Controllers
         // Страница для создания продукта
         public IActionResult CreateProduct()
         {
-            CreateProductDTO product = new CreateProductDTO {
+            CreateProductDTO product = new CreateProductDTO
+            {
                 Categories = _categoryRepository.GetAll()
             };
             return View(product);
@@ -91,7 +91,7 @@ namespace KuzinShop.Controllers
                     DateValue = attr.DataType == "date" ? attr.DateValue : null
                 }).ToList();
 
-                _productRepository.Create(product);
+                _productRepository.Save(product);
                 return RedirectToAction("Index");
             }
 
@@ -100,7 +100,7 @@ namespace KuzinShop.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditProduct(int id)
+        public IActionResult EditProduct(long id)
         {
             // Получаем продукт из репозитория
             var product = _productRepository.Get(id);
@@ -189,7 +189,7 @@ namespace KuzinShop.Controllers
         }
 
 
-        public IActionResult DeleteProduct(int id)
+        public IActionResult DeleteProduct(long id)
         {
             // Найти продукт по Id
             var product = _productRepository.Get(id);
@@ -208,7 +208,7 @@ namespace KuzinShop.Controllers
 
         // Запрос на получение аттрибутов согласно выбранной категории
         [HttpGet]
-        public IActionResult GetCategoryAttributes(int categoryId)
+        public IActionResult GetCategoryAttributes(long categoryId)
         {
             var attributes = _categoryAttributeRepository
                 .GetAttributesByCategoryId(categoryId)
@@ -225,7 +225,7 @@ namespace KuzinShop.Controllers
             {
                 return NotFound("Атрибуты для данной категории не найдены.");
             }
-            
+
             return Json(attributes); // Это будет правильный массив объектов
         }
 
@@ -246,6 +246,7 @@ namespace KuzinShop.Controllers
                     LastName = user.LastName,
                     FirstName = user.FirstName,
                     Email = user.Email,
+                    IsActive = user.IsActive,
                     UserName = user.UserName,
                     Roles = roles
                 });
@@ -253,11 +254,166 @@ namespace KuzinShop.Controllers
 
             return View(usersWithRoles);
         }
-        
+
+        [HttpPost]
+        public IActionResult ChangeUserStatus(string id)
+        {
+            User user = _userRepository.Get(id);
+            _userRepository.ChangeUserStatus(user);
+
+
+            return RedirectToAction("Users");
+        }
+
+
+        [HttpGet]
         public IActionResult Categories()
         {
             List<CategoryModel> categories = _categoryRepository.GetAll();
             return View(categories);
+        }
+
+        [HttpGet]
+        public IActionResult CreateCategory()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreateCategory(CategoryModel category)
+        {
+            _categoryRepository.Save(category);
+            return RedirectToAction("Categories");
+        }
+
+        [HttpGet]
+        public IActionResult EditCategory(int id)
+        {
+            CategoryModel category = _categoryRepository.Get(id);
+            return View(category);
+        }
+
+        [HttpPost]
+        public IActionResult EditCategory(CategoryModel category)
+        {
+            _categoryRepository.Update(category);
+            return RedirectToAction("Categories");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteCategory(long id)
+        {
+            _categoryRepository.Delete(_categoryRepository.Get(id));
+            return RedirectToAction("Categories");
+        }
+
+
+        [HttpGet]
+        public IActionResult Attributes()
+        {
+            List<AttributeModel> attributes = _attributeRepository.GetAll();
+            return View(attributes);
+        }
+
+        [HttpGet]
+        public IActionResult CreateAttribute(long id)
+        {
+            CreateAttributeViewModel attributeViewModel = new CreateAttributeViewModel();
+            ViewBag.Categories = new SelectList(_categoryRepository.GetAll(), "Id", "Name");
+            return View(attributeViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult CreateAttribute(CreateAttributeViewModel model)
+        {
+            // Создаем новый атрибут и связываем его с категорией
+            var attribute = new AttributeModel
+            {
+                Name = model.Name,
+                DataType = model.DataType,
+                Measure = model.Measure
+            };
+
+            _attributeRepository.Save(attribute);
+
+            var categoryAttribute = new CategoryAttributeModel
+            {
+                AttributeId = attribute.Id,
+                CategoryId = model.Category.Id // Связь с категорией
+            };
+
+            _categoryAttributeRepository.Save(categoryAttribute);
+
+            return RedirectToAction("Attributes");
+        }
+
+        [HttpGet]
+        public IActionResult EditAttribute(long id)
+        {
+            // Получаем атрибут и связанные категории
+            var attribute = _attributeRepository.GetWithCategories(id);
+            if (attribute == null)
+            {
+                return NotFound("Attribute not found");
+            }
+
+            // Заполняем модель
+            var model = new EditAttributeViewModel
+            {
+                Id = attribute.Id,
+                Name = attribute.Name,
+                DataType = attribute.DataType,
+                Measure = attribute.Measure,
+                SelectedCategoryIds = attribute.CategoryAttributes.Select(ca => ca.CategoryId).ToList(),
+                Categories = _categoryRepository.GetAll().ToList()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateAttribute(EditAttributeViewModel model)
+        {
+            // Получаем атрибут из базы
+            var attribute = _attributeRepository.GetWithCategories(model.Id);
+            if (attribute == null)
+            {
+                return NotFound("Attribute not found");
+            }
+
+            // Обновляем данные атрибута
+            attribute.Name = model.Name;
+            attribute.DataType = model.DataType;
+            attribute.Measure = model.Measure;
+
+            // Удаляем старые связи с категориями
+            _categoryAttributeRepository.DeleteByAttributeId(model.Id);
+
+            // Добавляем новые связи с категориями
+            foreach (var categoryId in model.SelectedCategoryIds)
+            {
+                var category = _categoryRepository.Get(categoryId);
+                if (category != null)
+                {
+                    _categoryAttributeRepository.Save(new CategoryAttributeModel
+                    {
+                        AttributeId = model.Id,
+                        CategoryId = categoryId
+                    });
+                }
+            }
+
+            // Сохраняем изменения
+            _attributeRepository.Update(attribute);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteAttribute(long id)
+        {
+            _attributeRepository.Delete(id);
+            return RedirectToAction("Attributes");
         }
     }
 }

@@ -22,6 +22,24 @@
                 <div class="collapse show" id="filterPanel">
                     <div class="card-body bg-light">
                         <form method="get" action="@Url.Action("Index", "Home")">
+
+                            <!-- Поля для сортировки -->
+                            <div class="form-group mx-2">
+                                <label for="SortBy" class="mr-2">Сортировать по</label>
+                                <select id="SortBy" name="SortBy" class="form-control">
+                                    <option value="Name" >Название</option>
+                                    <option value="Price">Цена</option>
+                                    <option value="Publisher">Издатель</option>
+                                </select>
+                            </div>
+                            <div class="form-group mx-2">
+                                <label for="SortOrder" class="mr-2">Порядок</label>
+                                <select id="SortOrder" name="SortOrder" class="form-control">
+                                    <option value="asc">По возрастанию</option>
+                                    <option value="desc">По убыванию</option>
+                                </select>
+                            </div>
+
                             <!-- Поле поиска по названию -->
                             <div class="mb-3">
                                 <label for="Name" class="form-label">Название</label>

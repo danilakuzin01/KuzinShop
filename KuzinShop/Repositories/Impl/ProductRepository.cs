@@ -3,9 +3,9 @@ using KuzinShop.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace KuzinShop.Repositories
+namespace KuzinShop.Repositories.Impl
 {
-    public class ProductRepository: IProductRepository<ProductModel>
+    public class ProductRepository : IProductRepository
     {
         private readonly ApplicationContext _context;
 
@@ -14,7 +14,7 @@ namespace KuzinShop.Repositories
             _context = context;
         }
 
-        public void Create(ProductModel product)
+        public void Save(ProductModel product)
         {
             if (product == null)
             {
@@ -72,7 +72,7 @@ namespace KuzinShop.Repositories
             // Фильтрация по строковым атрибутам
             foreach (var attributeFilter in filter.AttributeFilters)
             {
-                if (attributeFilter.Key != null && attributeFilter.Value!=null)
+                if (attributeFilter.Key != null && attributeFilter.Value != null)
                 {
                     string attributeName = attributeFilter.Key.ToLower();
                     string value = attributeFilter.Value.ToLower();
@@ -121,7 +121,7 @@ namespace KuzinShop.Repositories
             return products.ToList();
         }
 
-        public ProductModel Get(int id)
+        public ProductModel Get(long id)
         {
             return _context.Products.Include(p => p.Category).Include(p => p.ProductAttributes).ThenInclude(p => p.Attribute).FirstOrDefault(p => p.Id == id);
         }

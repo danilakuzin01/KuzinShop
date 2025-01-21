@@ -54,8 +54,7 @@
                     {
                         <input type="date" name="Attributes[@attr.AttributeId].DateValue" class="form-control" value="@attr.DateValue?.ToString("yyyy-MM-dd")" />
                     }
-
-                    <span asp-validation-for="Attributes[@attr.AttributeId]" class="text-danger"></span>
+                    @* <span asp-validation-for="Attributes[@attr.AttributeId]" class="text-danger"></span> *@
                 </div>
              }
         </div>

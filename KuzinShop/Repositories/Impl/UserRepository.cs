@@ -1,7 +1,7 @@
 ﻿using KuzinShop.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace KuzinShop.Repositories
+namespace KuzinShop.Repositories.Impl
 {
     public class UserRepository
     {
@@ -26,9 +26,9 @@ namespace KuzinShop.Repositories
             _context.SaveChanges();
         }
 
-        public void BanUser(User user)
+        public void ChangeUserStatus(User user)
         {
-            user.IsActive = false;
+            user.IsActive = !user.IsActive;
         }
 
         //public User GetByLogin(string login)

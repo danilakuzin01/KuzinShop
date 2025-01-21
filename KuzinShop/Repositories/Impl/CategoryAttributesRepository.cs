@@ -1,7 +1,7 @@
 ﻿using KuzinShop.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace KuzinShop.Repositories
+namespace KuzinShop.Repositories.Impl
 {
     public class CategoryAttributesRepository
     {
@@ -22,7 +22,7 @@ namespace KuzinShop.Repositories
             return _context.CategoryAttributes.Include(ca => ca.Attribute).FirstOrDefault(ca => ca.Id == id);
         }
 
-        public void Add(CategoryAttributeModel entity)
+        public void Save(CategoryAttributeModel entity)
         {
             _context.CategoryAttributes.Add(entity);
             _context.SaveChanges();
@@ -34,7 +34,7 @@ namespace KuzinShop.Repositories
             _context.SaveChanges();
         }
 
-        public void Delete(int id)
+        public void Delete(long id)
         {
             var entity = _context.CategoryAttributes.Find(id);
             if (entity != null)
@@ -44,7 +44,7 @@ namespace KuzinShop.Repositories
             }
         }
 
-        public List<AttributeModel> GetAttributesByCategoryId(int categoryId)
+        public List<AttributeModel> GetAttributesByCategoryId(long categoryId)
         {
             return _context.CategoryAttributes
                 .Where(ca => ca.Category.Id == categoryId)
@@ -53,12 +53,20 @@ namespace KuzinShop.Repositories
                 .ToList();
         }
 
-        public List<CategoryAttributeModel> GetAttributesByCategory(int categoryId)
+        public List<CategoryAttributeModel> GetAttributesByCategory(long categoryId)
         {
             return _context.CategoryAttributes
                 .Include(ca => ca.Attribute) // Загрузка связанных данных
                 .Where(ca => ca.Category.Id == categoryId)
                 .ToList();
+        }
+
+        public void DeleteByAttributeId(long attributeId)
+        {
+            var categoryAttributes = _context.CategoryAttributes
+                .Where(ca => ca.AttributeId == attributeId);
+            _context.CategoryAttributes.RemoveRange(categoryAttributes);
+            _context.SaveChanges();
         }
     }
 }

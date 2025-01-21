@@ -4,7 +4,7 @@ namespace KuzinShop.Models
 {
     public class ProductModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public CategoryModel Category { get; set; } // Пк игры, настолки, спортивные
         public string Name { get; set; }
         public string Description { get; set; }
@@ -20,7 +20,7 @@ namespace KuzinShop.Models
         // Конструктор по умолчанию (требуется для EF Core)
         public ProductModel() { }
 
-        public ProductModel(int id, CategoryModel category, string name, string description, DateTime date, int price, string publisher, int playersCount, string image)
+        public ProductModel(long id, CategoryModel category, string name, string description, DateTime date, int price, string publisher, int playersCount, string image)
         {
             Id = id;
             Category = category;

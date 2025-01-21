@@ -4,7 +4,8 @@ namespace KuzinShop.Models
 {
     public class ProductAttributeModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
+
         [JsonIgnore] // Пропускаем циклическую ссылку на Product
         public ProductModel Product { get; set; }
         public AttributeModel Attribute { get; set; }

@@ -2,7 +2,7 @@
 {
     public class ProductDetailDTO
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string CategoryName { get; set; } // Пк игры, настолки, спортивные
         public string Name { get; set; }
         public string Description { get; set; }

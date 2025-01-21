@@ -3,7 +3,7 @@
     public class FilterModel
     {
         public string Name { get; set; } // Поиск по названию
-        public int? CategoryId { get; set; } // Фильтрация по категории
+        public long? CategoryId { get; set; } // Фильтрация по категории
         public int? MinPrice { get; set; } // Минимальная цена
         public int? MaxPrice { get; set; } // Максимальная цена
         public string Publisher { get; set; } // Издатель
@@ -12,7 +12,7 @@
 
 
         // Добавляем параметры для сортировки
-        public string SortBy { get; set; } = "Name";  // Поле для сортировки (по умолчанию по имени)
+        public string SortBy { get; set; } = "Price";  // Поле для сортировки (по умолчанию по имени)
         public string SortOrder { get; set; } = "asc"; // Порядок сортировки (по умолчанию по возрастанию)
 
         // Фильтры по атрибутам товаров

@@ -9,9 +9,9 @@ namespace KuzinShop.Controllers
     public class CartController : Controller
     {
         private readonly CartService _cartService;
-        private readonly IProductRepository<ProductModel> _productRepository;
+        private readonly IRepository<ProductModel> _productRepository;
 
-        public CartController(CartService cartService, IProductRepository<ProductModel> productRepository)
+        public CartController(CartService cartService, IRepository<ProductModel> productRepository)
         {
             _cartService = cartService;
             _productRepository = productRepository;

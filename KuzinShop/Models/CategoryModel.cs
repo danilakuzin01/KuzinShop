@@ -1,10 +1,14 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace KuzinShop.Models
 {
     public class CategoryModel
     {
-        public int Id { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Указывает автоинкремент
+        public long Id { get; set; }
         public string Name { get; set; }
 
 

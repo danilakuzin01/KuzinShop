@@ -1,0 +1,46 @@
+﻿@model List<AttributeModel>
+
+<div class="text-center mt-4">
+</div>
+<h2 class="mt-5">👥 Аттрибуты</h2>
+<!-- Кнопка добавления нового продукта -->
+<div class="text-center mt-4">
+    <a asp-controller="Admin" asp-action="CreateAttribute" class="btn btn-primary">➕ Добавить аттрибут</a>
+</div>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Название</th>
+                <th>Категории</th>
+                <th>Тип данных</th>
+                <th>Единицы измерения</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                foreach (var attr in Model)
+                {
+                    <tr>
+                        <td>@attr.Id</td>
+                        <td>@attr.Name</td>
+                        <td>@foreach(var category in attr.CategoryAttributes) @category.Category.Name </td>
+                        <td>@attr.DataType </td>
+                        <td>@attr.Measure </td>
+                    <td>
+
+                        <form method="get" action="@Url.Action("EditAttribute", "Admin", new { id = attr.Id })" style="display: inline-block; margin-left: 10px;">
+                            <button type="submit" class="btn btn-sm btn-warning">✏️ Редактировать</button>
+                        </form>
+
+                        <form method="post" action="@Url.Action("DeleteAttribute", "Admin", new { id = attr.Id })" style="display: inline-block; margin-left: 10px;">
+                            <button type="submit" class="btn btn-sm btn-danger">🗑️ Удалить</button>
+                        </form>
+                    </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

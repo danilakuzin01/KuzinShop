@@ -2,14 +2,12 @@
 
 namespace KuzinShop.Repositories
 {
-    public interface IProductRepository<T> where T : class
+    public interface IProductRepository: IRepository<ProductModel>
     {   
-        void Create(T product);
-        void Update(T product);
-        List<T> GetAll();
-        List<T> GetByFilter(FilterModel filter);
-        T Get(int id);
+        void Save(ProductModel product);
+        void Update(ProductModel product);
         void Delete (ProductModel product);
+        List<ProductModel> GetByFilter(FilterModel filter);
 
     }
 }

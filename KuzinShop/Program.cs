@@ -2,6 +2,7 @@ using KuzinShop;
 using KuzinShop.Models;
 using KuzinShop.Models.DTO;
 using KuzinShop.Repositories;
+using KuzinShop.Repositories.Impl;
 using KuzinShop.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -57,8 +58,10 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 
 // Регистрация ProductRepository в контейнере DI
-builder.Services.AddScoped<IProductRepository<ProductModel>, ProductRepository>();
+builder.Services.AddScoped<IRepository<ProductModel>, ProductRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IRepository<CategoryModel>, CategoryRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IAttributeRepository<AttributeModel>, AttributeRepository>();
 builder.Services.AddScoped<CategoryAttributesRepository>();
 builder.Services.AddScoped<ProductMapper>();

@@ -2,15 +2,15 @@
 
 <!-- Кнопка добавления нового продукта -->
 <div class="text-center mt-4">
-    <a asp-controller="Admin" asp-action="CreateCategory" class="btn btn-primary">➕ Добавить категорию</a>
 </div>
-<h2 class="mt-5">📦 Последние добавленные продукты</h2>
+<h2 class="mt-5">👥 Пользователи</h2>
 <table class="table table-striped mt-3">
     <thead>
         <tr>
             <th>#</th>
             <th>Имя</th>
             <th>Логин</th>
+            <th>Статус</th>
             <th>Роли</th>
         </tr>
     </thead>
@@ -23,16 +23,26 @@
                     <td>@user.Id</td>
                     <td>@user.FirstName @user.LastName</td>
                     <td>@user.UserName</td>
+                    @if (user.IsActive) {
+                        <td>Активен</td>
+                    }else{
+                        <td>Не активен</td>
+                    }
                     <td>@foreach(var role in user.Roles) @role.ToString()</td>
                     <td>
 
                         <form method="get" action="@Url.Action("EditUser", "Admin", new { id = user.Id })" style="display: inline-block; margin-left: 10px;">
                             <button type="submit" class="btn btn-sm btn-warning">✏️ Редактировать</button>
                         </form>
-
-                        <form method="post" action="@Url.Action("BanUser", "Admin", new { id = user.Id })" style="display: inline-block; margin-left: 10px;">
-                            <button type="submit" class="btn btn-sm btn-danger">🗑️ Заблокировать</button>
-                        </form>
+                        @if(user.IsActive){
+                            <form method="post" action="@Url.Action("ChangeUserStatus", "Admin", new { id = user.Id })" style="display: inline-block; margin-left: 10px;">
+                                <button type="submit" class="btn btn-sm btn-danger">❌ Заблокировать</button>
+                            </form>
+                        } else{
+                            <form method="post" action="@Url.Action("ChangeUserStatus", "Admin", new { id = user.Id })" style="display: inline-block; margin-left: 10px;">
+                                <button type="submit" class="btn btn-sm btn-success">✅ Разблокировать</button>
+                            </form>
+                        }
                     </td>
                 </tr>
             }
